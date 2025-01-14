@@ -2,7 +2,7 @@
   "domain": "network_data",
   "name": "Network Data",
   "version": "1.0.0",
-  "documentation": "https://github.com/your-repo-link",
+  "documentation": "https://github.com/posicat/mac_json",
   "requirements": [],
   "codeowners": ["posicat@pobox.com"]
 }
