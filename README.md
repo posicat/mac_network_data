@@ -1,4 +1,4 @@
-# mac_json Integration for Home Assistant
+# mac_network_data Integration for Home Assistant
 
 This custom integration fetches network data from a specified URL and creates sensors for devices based on their MAC addresses.
 
@@ -9,5 +9,5 @@ This custom integration fetches network data from a specified URL and creates se
 
 ```yaml
 sensor:
-  - platform: mac_json
+  - platform: mac_network_data
     url: "https://server.lan/network_ping.cgi?mode=load"
