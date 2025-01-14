@@ -1,8 +1,0 @@
-{
-  "domain": "network_data",
-  "name": "MAC Network Data",
-  "version": "1.0.0",
-  "documentation": "https://github.com/posicat/mac_json",
-  "requirements": [],
-  "codeowners": ["posicat@pobox.com"]
-}
