@@ -4,5 +4,6 @@
   "version": "1.0.0",
   "documentation": "https://github.com/posicat/mac_json",
   "requirements": [],
-  "codeowners": ["posicat@pobox.com"]
+  "codeowners": ["posicat@pobox.com"],
+  "issue_tracker": "https://github.com/posicat/mac_network_data/issues",
 }
