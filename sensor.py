@@ -30,8 +30,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     for mac, details in network_data.items():
         sensors.append(NetworkDeviceSensor(mac, details))
 
-    async_add_entities(sensors, True)
-
+    async_add_entities(sensors, update_before_add=True)
+    
 class NetworkDeviceSensor(Entity):
     """Representation of a network device as a sensor."""
 
@@ -61,3 +61,10 @@ class NetworkDeviceSensor(Entity):
             "ago": self._details.get("ago", "Unknown"),
             "message": self._details.get("msg", "Unknown"),
         }
+        
+async def async_update(self):
+    """Fetch new data for the sensor."""
+    network_data = await fetch_network_data()
+    if self._mac in network_data:
+        self._details = network_data[self._mac]
+        self._state = self._details.get("ip", "Unknown")
