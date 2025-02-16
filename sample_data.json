@@ -1,0 +1,44 @@
+{
+  "networkData": {
+    "xx:xx:xx:xx:xx:xx": {
+      "net": "lan.Main",
+      "name": null,
+      "ip": "10.0.x.x",
+      "time": 1715717656,
+      "msg": "offer",
+      "ago": 23976703
+    },
+    "xx:xx:xx:xx:xx:xx": {
+      "msg": "ack",
+      "ago": 8126261,
+      "name": "Maxwells-Air",
+      "ip": "10.0.x.x",
+      "net": "vlan.WiFi",
+      "time": 1731568098
+    },
+    "xx:xx:xx:xx:xx:xx": {
+      "ip": "10.0.x.x",
+      "name": "tasmota-8B7C60-7264",
+      "time": 1739694138,
+      "net": "vlan.IOT",
+      "msg": "ack",
+      "ago": 221
+    },
+    "xx:xx:xx:xx:xx:xx": {
+      "name": "ws-gateway",
+      "ip": "10.0.x.x",
+      "net": "vlan.IOT",
+      "time": 1739692622,
+      "msg": "ack",
+      "ago": 1737
+    },
+    "xx:xx:xx:xx:xx:xx": {
+      "name": "apollo-msr-1-c00d34",
+      "ip": "10.0.x.x",
+      "net": "vlan.IOT",
+      "time": 1739694143,
+      "ago": 216,
+      "msg": "ack"
+    }
+  }
+}
