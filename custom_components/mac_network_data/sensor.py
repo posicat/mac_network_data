@@ -1,19 +1,14 @@
 import aiohttp
 import logging
-import voluptuous as vol
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_time_interval
-import homeassistant.helpers.config_validation as cv
 from datetime import timedelta
 
-from .constants import DOMAIN, CONF_URL, LOGGER, CONFIG_SCHEMA
+from .constants import DOMAIN, CONF_URL, LOGGER
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the sensor platform using YAML."""
-    # Validate the configuration
-    config = CONFIG_SCHEMA(config)
-
-    url = config[DOMAIN][CONF_URL]
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Set up the sensor platform using config entry."""
+    url = config_entry.data[CONF_URL]
 
     # Store the URL in global data
     hass.data[DOMAIN] = {
