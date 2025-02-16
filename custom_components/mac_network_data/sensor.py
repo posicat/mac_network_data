@@ -43,12 +43,16 @@ async def fetch_network_data(url):
 async def update_network_data(hass, async_add_entities):
     """Fetch new network data and update all sensors."""
     url = hass.data[DOMAIN]["url"]
-    network_data = await fetch_network_data(url)
+    json_data = await fetch_network_data(url)
+    network_data = json_data.networkData
     
     if not network_data:
         LOGGER.error("Failed to fetch updated network data.")
         return
-    
+
+    # Log the entire network_data dictionary
+    LOGGER.info("Fetched network data: %s", json.dumps(network_data, indent=2))
+
     # Get the current list of sensor MAC addresses
     existing_macs = {sensor._mac for sensor in hass.data[DOMAIN]["entities"]}
 
