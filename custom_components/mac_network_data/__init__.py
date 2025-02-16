@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "network_data"
+DOMAIN = "mac_network_data"
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Network Data integration."""
