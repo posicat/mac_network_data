@@ -6,7 +6,7 @@ DOMAIN = "network_data"
 
 _LOGGER = logging.getLogger(__name__)
 
-async def fetch_network_data():
+async def fetch_network_data(hass):
     """Fetch the JSON data from the URL."""
     try:
         async with aiohttp.ClientSession() as session:
