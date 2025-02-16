@@ -10,7 +10,7 @@ async def fetch_network_data():
     """Fetch the JSON data from the URL."""
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(DATA_URL) as response:
+            async with session.get(hass.data[DOMAIN]["data_url"]) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("networkData", {})
@@ -24,7 +24,7 @@ async def fetch_network_data():
 async def async_setup_entry(hass, entry):
     """Set up the integration from a config entry."""
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN]["data_url"] = "some_value"
+    hass.data[DOMAIN]["data_url"] = config.get("url", "")
     return True
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
