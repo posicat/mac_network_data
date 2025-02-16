@@ -9,8 +9,8 @@ from datetime import timedelta
 DOMAIN = "network_data"
 _LOGGER = logging.getLogger(__name__)
 
-# Define YAML configuration schema
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+# Define the configuration schema for the platform (for validating `configuration.yaml`)
+PLATFORM_SCHEMA = vol.Schema({
     vol.Required("url"): cv.url,  # Ensure the URL is valid
 })
 
