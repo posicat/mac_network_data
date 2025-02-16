@@ -1,5 +1,6 @@
 import aiohttp
 import logging
+import json
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_time_interval
 from datetime import timedelta
@@ -32,10 +33,12 @@ async def fetch_network_data(url):
             async with session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
+                    LOGGER.info("Raw data: %s", json.dumps(data, indent=2))
+
                     return data.get("networkData", {})
                 else:
                     LOGGER.error("Failed to fetch data: HTTP %s", response.status)
-                    LOGGER.error("URL : %s", url)
+                    #LOGGER.error("URL : %s", url)
 
     except Exception as e:
         LOGGER.error("Error fetching network data: %s", e)
@@ -46,6 +49,9 @@ async def update_network_data(hass, async_add_entities):
     """Fetch new network data and update all sensors."""
     url = hass.data[DOMAIN]["url"]
     network_data = await fetch_network_data(url)
+
+    # Log the entire network_data dictionary
+    LOGGER.info("Fetched network data: %s", json.dumps(network_data, indent=2))
     
     if not network_data:
         LOGGER.error("Failed to fetch updated network data.")
