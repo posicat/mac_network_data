@@ -31,7 +31,7 @@ async def async_setup(hass, config):
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensors for network data."""
-    network_data = await fetch_network_data(hass)
+    network_data = await fetch_network_data()
     sensors = []
 
     for mac, details in network_data.items():
