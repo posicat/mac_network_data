@@ -6,6 +6,25 @@ DOMAIN = "network_data"
 
 _LOGGER = logging.getLogger(__name__)
 
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+    vol.Required(CONF_URL): cv.url,  # Ensure the URL is valid
+})
+
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Set up the sensor platform using YAML."""
+    url = config[CONF_URL]
+
+    # Fetch JSON data once to discover available keys
+    json_data = await fetch_network_data(url)
+    if not json_data:
+        _LOGGER.error("Failed to fetch JSON data, skipping sensor creation")
+        return
+
+    # Create a sensor for each key in the JSON response
+    sensors = [MacNetworkSensor(hass, url, key) for key in json_data.keys()]
+    async_add_entities(sensors, True)
+
+
 async def async_setup(hass, config, async_add_entities):
     """Set up the sensor platform using YAML."""
     if DOMAIN not in config:
