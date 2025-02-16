@@ -10,6 +10,9 @@ from .constants import DOMAIN, CONF_URL, LOGGER, PLATFORM_SCHEMA
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform using YAML."""
+    # Validate the configuration
+    config = PLATFORM_SCHEMA(config)
+
     url = config[CONF_URL]
 
     # Store the URL in global data
