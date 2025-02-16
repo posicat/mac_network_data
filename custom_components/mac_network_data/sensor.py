@@ -6,11 +6,11 @@ DOMAIN = "network_data"
 
 _LOGGER = logging.getLogger(__name__)
 
-async def fetch_network_data(hass):
+async def fetch_network_data():
     """Fetch the JSON data from the URL."""
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(hass.data[DOMAIN]["data_url"]) as response:
+            async with session.get(self.hass.data[DOMAIN]["data_url"]) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("networkData", {})
@@ -23,8 +23,9 @@ async def fetch_network_data(hass):
 
 async def async_setup_entry(hass, entry):
     """Set up the integration from a config entry."""
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN]["data_url"] = config.get("url", "")
+    self.hass = hass;
+    self.hass.data.setdefault(DOMAIN, {})
+    self.hass.data[DOMAIN]["data_url"] = config.get("url", "")
     return True
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
