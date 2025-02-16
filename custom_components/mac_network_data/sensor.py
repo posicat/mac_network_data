@@ -6,21 +6,6 @@ DOMAIN = "network_data"
 
 _LOGGER = logging.getLogger(__name__)
 
-async def fetch_network_data():
-    """Fetch the JSON data from the URL."""
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(self.url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data.get("networkData", {})
-                else:
-                    _LOGGER.error("Failed to fetch data: HTTP %s", response.status)
-    except Exception as e:
-        _LOGGER.error("Error fetching network data: %s", e)
-
-    return {}
-
 async def async_setup(hass, config):
     """Set up the integration from a config entry."""
     self.hass = hass;
@@ -31,7 +16,7 @@ async def async_setup(hass, config):
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensors for network data."""
-    network_data = await fetch_network_data()
+    network_data = await fetch_network_data(self)
     sensors = []
 
     for mac, details in network_data.items():
@@ -47,6 +32,22 @@ class MacNetworkSensor(Entity):
         self._details = details
         self._name = f"Device {mac}"
         self._state = details.get("ip", "Unknown")
+
+
+    async def fetch_network_data(self):
+      """Fetch the JSON data from the URL."""
+      try:
+          async with aiohttp.ClientSession() as session:
+              async with session.get(self.url) as response:
+                  if response.status == 200:
+                      data = await response.json()
+                      return data.get("networkData", {})
+                  else:
+                      _LOGGER.error("Failed to fetch data: HTTP %s", response.status)
+      except Exception as e:
+          _LOGGER.error("Error fetching network data: %s", e)
+
+      return {}
 
     @property
     def name(self):
