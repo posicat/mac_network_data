@@ -3,7 +3,6 @@ import logging
 from homeassistant.helpers.entity import Entity
 
 DOMAIN = "network_data"
-DATA_URL = config.get("url", "")
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,9 +21,15 @@ async def fetch_network_data():
 
     return {}
 
+async def async_setup_entry(hass, entry):
+    """Set up the integration from a config entry."""
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN]["data_url"] = "some_value"
+    return True
+
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensors for network data."""
-    network_data = await fetch_network_data()
+    network_data = await fetch_network_data(hass)
     sensors = []
 
     for mac, details in network_data.items():
