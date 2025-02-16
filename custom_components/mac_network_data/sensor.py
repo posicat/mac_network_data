@@ -6,7 +6,7 @@ from homeassistant.helpers.event import async_track_time_interval
 import homeassistant.helpers.config_validation as cv
 from datetime import timedelta
 
-DOMAIN = "network_data"
+DOMAIN = "mac_network_data"
 _LOGGER = logging.getLogger(__name__)
 
 # Define the configuration schema for the platform (for validating `configuration.yaml`)
