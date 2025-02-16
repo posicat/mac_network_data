@@ -1,4 +1,5 @@
 # constants.py
+import logging
 
 DOMAIN = "mac_network_data"
 CONF_URL = "url"
