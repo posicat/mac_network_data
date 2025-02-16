@@ -6,13 +6,7 @@ from homeassistant.helpers.event import async_track_time_interval
 import homeassistant.helpers.config_validation as cv
 from datetime import timedelta
 
-DOMAIN = "mac_network_data"
-_LOGGER = logging.getLogger(__name__)
-
-# Define the configuration schema for the platform (for validating `configuration.yaml`)
-PLATFORM_SCHEMA = vol.Schema({
-    vol.Required("url"): cv.url,  # Ensure the URL is valid
-})
+from .constants import DOMAIN, CONF_URL, LOGGER, PLATFORM_SCHEMA
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform using YAML."""
@@ -42,9 +36,9 @@ async def fetch_network_data(url):
                     data = await response.json()
                     return data.get("networkData", {})
                 else:
-                    _LOGGER.error("Failed to fetch data: HTTP %s", response.status)
+                    LOGGER.error("Failed to fetch data: HTTP %s", response.status)
     except Exception as e:
-        _LOGGER.error("Error fetching network data: %s", e)
+        LOGGER.error("Error fetching network data: %s", e)
   
     return {}
 
@@ -54,7 +48,7 @@ async def update_network_data(hass, async_add_entities):
     network_data = await fetch_network_data(url)
     
     if not network_data:
-        _LOGGER.error("Failed to fetch updated network data.")
+        LOGGER.error("Failed to fetch updated network data.")
         return
     
     # Get the current list of sensor MAC addresses
@@ -77,7 +71,7 @@ async def update_network_data(hass, async_add_entities):
             if sensor._mac == mac:
                 sensor._details = details
                 sensor._state = details.get("ip", "Unknown")
-                _LOGGER.info(f"Updated sensor {sensor._name}: {sensor._state}")
+                LOGGER.info(f"Updated sensor {sensor._name}: {sensor._state}")
 
     # Add new sensors if there are any
     if new_sensors:
@@ -122,4 +116,4 @@ class MacNetworkSensor(Entity):
         if self._mac in network_data:
             self._details = network_data[self._mac]
             self._state = self._details.get("ip", "Unknown")
-            _LOGGER.info(f"Updated sensor {self._name}: {self._state}")
+            LOGGER.info(f"Updated sensor {self._name}: {self._state}")
