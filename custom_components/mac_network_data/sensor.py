@@ -10,7 +10,7 @@ from .constants import DOMAIN, CONF_URL, LOGGER, PLATFORM_SCHEMA
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform using YAML."""
-    url = config["url"]
+    url = config[CONF_URL]
 
     # Store the URL in global data
     hass.data[DOMAIN] = {
@@ -111,7 +111,7 @@ class MacNetworkSensor(Entity):
     async def async_update(self):
         """Fetch new data for the sensor."""
         # Get the latest data from the global data store
-        network_data = hass.data[DOMAIN]["network_data"]
+        network_data = self.hass.data[DOMAIN]["network_data"]
         
         if self._mac in network_data:
             self._details = network_data[self._mac]
