@@ -35,6 +35,8 @@ async def fetch_network_data(url):
                     return data.get("networkData", {})
                 else:
                     LOGGER.error("Failed to fetch data: HTTP %s", response.status)
+                    LOGGER.error("URL : %s", url)
+
     except Exception as e:
         LOGGER.error("Error fetching network data: %s", e)
   
@@ -43,8 +45,7 @@ async def fetch_network_data(url):
 async def update_network_data(hass, async_add_entities):
     """Fetch new network data and update all sensors."""
     url = hass.data[DOMAIN]["url"]
-    json_data = await fetch_network_data(url)
-    network_data = json_data.networkData
+    network_data = await fetch_network_data(url)
     
     if not network_data:
         LOGGER.error("Failed to fetch updated network data.")
