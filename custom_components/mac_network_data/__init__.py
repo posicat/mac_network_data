@@ -15,6 +15,8 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up the mac_network_data integration when a config entry is created."""
+    hass.helpers.discovery.load_platform("sensor", DOMAIN, {}, entry)
+
     # Retrieve the config data (e.g., URL)
     config = entry.data
     
