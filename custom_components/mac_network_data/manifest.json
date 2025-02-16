@@ -2,7 +2,7 @@
   "domain": "mac_network_data",
   "name": "MAC Network Data",
   "version": "1.0.0",
-  "documentation": "https://github.com/posicat/mac_json",
+  "documentation": "https://github.com/posicat/mac_network_data",
   "requirements": [],
   "codeowners": ["@posicat"],
   "issue_tracker": "https://github.com/posicat/mac_network_data/issues",
