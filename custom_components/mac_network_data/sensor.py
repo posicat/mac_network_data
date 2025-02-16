@@ -1,61 +1,43 @@
 import aiohttp
 import logging
+import voluptuous as vol
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.event import async_track_time_interval
+import homeassistant.helpers.config_validation as cv
+from datetime import timedelta
 
 DOMAIN = "network_data"
-
 _LOGGER = logging.getLogger(__name__)
 
+# Define YAML configuration schema
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_URL): cv.url,  # Ensure the URL is valid
+    vol.Required("url"): cv.url,  # Ensure the URL is valid
 })
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform using YAML."""
-    url = config[CONF_URL]
+    url = config["url"]
 
-    # Fetch JSON data once to discover available keys
-    json_data = await fetch_network_data(url)
-    if not json_data:
-        _LOGGER.error("Failed to fetch JSON data, skipping sensor creation")
-        return
+    # Store the URL in global data
+    hass.data[DOMAIN] = {
+        "url": url,
+        "network_data": {},  # Initially empty, will be filled after the first fetch
+        "entities": []  # List to store sensor entities
+    }
 
-    # Create a sensor for each key in the JSON response
-    sensors = [MacNetworkSensor(hass, url, key) for key in json_data.keys()]
-    async_add_entities(sensors, True)
+    # Update network data for the first time
+    await update_network_data(hass, async_add_entities)
 
+    # Update the data every minute
+    async_track_time_interval(hass, lambda now: update_network_data(hass, async_add_entities), timedelta(minutes=1))
 
-async def async_setup(hass, config, async_add_entities):
-    """Set up the sensor platform using YAML."""
-    if DOMAIN not in config:
-        return False
-
-    sensors = []
-    for entry in config[DOMAIN]:
-      url = entry.get("url", "")
-
-      if not url:
-          _LOGGER.error("No URL provided for mac_network_data")
-          continue
-
-      # Fetch JSON data once to discover keys
-      network_data = await fetch_network_data(url)
-      if not json_data:
-          _LOGGER.error("Failed to fetch JSON data, skipping sensor creation")
-          continue
-
-      # Create a sensor for each key in the JSON response
-      for mac, details in network_data.items():
-        sensors.append(MacNetworkSensor(mac, details))
-
-    async_add_entities(sensors, update_before_add=True)
     return True
 
 async def fetch_network_data(url):
     """Fetch the JSON data from the URL."""
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.url) as response:
+            async with session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("networkData", {})
@@ -65,11 +47,47 @@ async def fetch_network_data(url):
         _LOGGER.error("Error fetching network data: %s", e)
   
     return {}
+
+async def update_network_data(hass, async_add_entities):
+    """Fetch new network data and update all sensors."""
+    url = hass.data[DOMAIN]["url"]
+    network_data = await fetch_network_data(url)
     
+    if not network_data:
+        _LOGGER.error("Failed to fetch updated network data.")
+        return
+    
+    # Get the current list of sensor MAC addresses
+    existing_macs = {sensor._mac for sensor in hass.data[DOMAIN]["entities"]}
+
+    # Update global data store
+    hass.data[DOMAIN]["network_data"] = network_data
+
+    # Process the new network data
+    new_sensors = []
+    for mac, details in network_data.items():
+        if mac not in existing_macs:
+            # New sensor, create it and add to the list
+            new_sensor = MacNetworkSensor(mac, details)
+            new_sensors.append(new_sensor)
+            existing_macs.add(mac)
+
+        # Update existing sensors
+        for sensor in hass.data[DOMAIN]["entities"]:
+            if sensor._mac == mac:
+                sensor._details = details
+                sensor._state = details.get("ip", "Unknown")
+                _LOGGER.info(f"Updated sensor {sensor._name}: {sensor._state}")
+
+    # Add new sensors if there are any
+    if new_sensors:
+        async_add_entities(new_sensors)
+
 class MacNetworkSensor(Entity):
     """Representation of a network device as a sensor."""
 
     def __init__(self, mac, details):
+        """Initialize the sensor."""
         self._mac = mac
         self._details = details
         self._name = f"Device {mac}"
@@ -95,10 +113,13 @@ class MacNetworkSensor(Entity):
             "ago": self._details.get("ago", "Unknown"),
             "message": self._details.get("msg", "Unknown"),
         }
+
+    async def async_update(self):
+        """Fetch new data for the sensor."""
+        # Get the latest data from the global data store
+        network_data = hass.data[DOMAIN]["network_data"]
         
-async def async_update(self):
-    """Fetch new data for the sensor."""
-    network_data = await fetch_network_data()
-    if self._mac in network_data:
-        self._details = network_data[self._mac]
-        self._state = self._details.get("ip", "Unknown")
+        if self._mac in network_data:
+            self._details = network_data[self._mac]
+            self._state = self._details.get("ip", "Unknown")
+            _LOGGER.info(f"Updated sensor {self._name}: {self._state}")
